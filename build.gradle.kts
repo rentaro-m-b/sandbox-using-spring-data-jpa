@@ -4,6 +4,7 @@ plugins {
 	id("org.springframework.boot") version "3.5.0"
 	id("io.spring.dependency-management") version "1.1.7"
 	kotlin("plugin.jpa") version "1.9.25"
+	id("org.flywaydb.flyway") version "9.22.3"
 }
 
 group = "com.example"
@@ -46,4 +47,11 @@ allOpen {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+flyway {
+	url = "jdbc:postgresql://localhost:54322/task_app_db"
+	user = "user"
+	password = "password"
+	locations = arrayOf("filesystem:src/main/resources/db/migration")
 }
