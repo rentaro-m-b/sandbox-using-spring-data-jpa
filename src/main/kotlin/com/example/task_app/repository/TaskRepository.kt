@@ -10,7 +10,7 @@ class TaskRepository(
     val mapper: TaskMapper
 ) {
     fun list(): List<Task> {
-        return
+        return Task.of(mapper.findAll())
     }
 
     fun find(id: UUID): Task {
@@ -28,6 +28,6 @@ class TaskRepository(
     }
 
     fun delete(id: UUID) {
-        mapper.delete(id)
+        mapper.deleteById(id)
     }
 }

@@ -16,10 +16,10 @@ data class Task(
                 content = entity.content,
             )
         }
-    }
 
-    fun of(entities: List<TaskEntity>): List<Task> {
-        return
+        fun of(entities: List<TaskEntity>): List<Task> {
+            return entities.map { Task.of(it) }
+        }
     }
 }
 

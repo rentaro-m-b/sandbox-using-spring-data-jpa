@@ -19,7 +19,7 @@ class TaskController(
 ) {
     @GetMapping
     fun list(): List<Task> {
-        return repository.find(id)
+        return repository.list()
     }
 
     @GetMapping("/{id}")
@@ -61,8 +61,6 @@ class TaskController(
     ) {
         repository.delete(id)
     }
-
-
 }
 
 
