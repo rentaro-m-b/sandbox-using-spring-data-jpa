@@ -12,6 +12,7 @@ data class TaskEntity(
     @Id val id: UUID,
     val title: String,
     val content: String,
+    val point: Int,
 ) {
     companion object {
         fun of(model: Task): TaskEntity {
@@ -19,6 +20,7 @@ data class TaskEntity(
                 id = model.id,
                 title = model.title,
                 content = model.content,
+                point = model.point,
             )
         }
     }
