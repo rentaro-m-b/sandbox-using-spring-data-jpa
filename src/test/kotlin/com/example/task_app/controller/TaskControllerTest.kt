@@ -56,11 +56,12 @@ class TaskControllerTest {
     fun beforeEach() {
         jdbc.update(
             """
-            INSERT INTO tasks (id, title, content) VALUES (?, ?, ?)
+            INSERT INTO tasks (id, title, content, point) VALUES (?, ?, ?, ?)
             """.trimIndent(),
             UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124"),
             "タイトル",
-            "内容"
+            "内容",
+            1
         )
     }
 
@@ -78,6 +79,7 @@ class TaskControllerTest {
                 id = UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124"),
                 title = "タイトル",
                 content = "内容",
+                point = 1,
             ),
         )
         assertEquals(actual, expected)

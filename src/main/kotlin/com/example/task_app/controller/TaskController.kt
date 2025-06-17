@@ -38,6 +38,7 @@ class TaskController(
             id = id,
             title = request.title,
             content = request.content,
+            point = request.point,
         )
         return repository.create(newTask)
     }
@@ -45,12 +46,13 @@ class TaskController(
     @PutMapping("/{id}")
     fun update(
         @PathVariable id: UUID,
-        @RequestBody request: CreateRequest,
+        @RequestBody request: UpdateRequest,
     ): Task {
         val task = Task(
             id = id,
             title = request.title,
             content = request.content,
+            point = request.point,
         )
         return repository.update(task)
     }
