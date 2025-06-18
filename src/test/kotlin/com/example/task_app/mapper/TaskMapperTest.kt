@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.RowMapper
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
@@ -80,7 +81,7 @@ class TaskMapperTest {
                 point = 1,
             ),
         )
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
     }
 
     @Test
@@ -92,30 +93,96 @@ class TaskMapperTest {
             content = "内容",
             point = 1,
         )
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
     }
 
     @Test
     fun `just call save method for insert`() {
+        val newUUID = UUID.randomUUID()
+        val actual =  target.save(
+            TaskEntity(
+                id = newUUID,
+                title = "title",
+                content = "content",
+                point = 100,
+            )
+        )
+        val expected = TaskEntity(
+            id = newUUID,
+            title = "title",
+            content = "content",
+            point = 100,
+        )
+        assertEquals(expected, actual)
+
+        val actualRecord = jdbc.query(
+            "SELECT * FROM tasks WHERE id = ?",
+            { rs, _ ->
+                TaskEntity(
+                    id = UUID.fromString(rs.getString("id")),
+                    title = rs.getString("title"),
+                    content = rs.getString("content"),
+                    point = rs.getInt("point"),
+                )
+            },
+            newUUID,
+        )
+
+        assertEquals(listOf(expected), actualRecord)
+    }
+
+    @Test
+    fun `just call save method for update`() {
         val actual =  target.save(
             TaskEntity(
                 id = UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124"),
-                title = "タイトル",
-                content = "内容",
-                point = 1,
+                title = "title",
+                content = "content",
+                point = 100,
             )
         )
         val expected = TaskEntity(
             id = UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124"),
-            title = "タイトル",
-            content = "内容",
-            point = 1,
+            title = "title",
+            content = "content",
+            point = 100,
         )
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
+
+        val actualRecord = jdbc.query(
+            "SELECT * FROM tasks WHERE id = ?",
+            { rs, _ ->
+                TaskEntity(
+                    id = UUID.fromString(rs.getString("id")),
+                    title = rs.getString("title"),
+                    content = rs.getString("content"),
+                    point = rs.getInt("point"),
+                )
+            },
+            UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124")
+        )
+
+        assertEquals(listOf(expected), actualRecord)
     }
 
     @Test
     fun `just call deleteById method`() {
         target.deleteById(UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124"))
+        val actual = jdbc.query(
+            "SELECT * FROM tasks WHERE id = ?",
+            { rs, _ ->
+                TaskEntity(
+                    id = UUID.fromString(rs.getString("id")),
+                    title = rs.getString("title"),
+                    content = rs.getString("content"),
+                    point = rs.getInt("point"),
+                )
+            },
+            UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124")
+        )
+
+        val expected = emptyList<TaskEntity>()
+
+        assertEquals(expected, actual)
     }
 }
