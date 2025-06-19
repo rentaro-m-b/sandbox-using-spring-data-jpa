@@ -71,7 +71,7 @@ class TaskRepositoryTest {
     }
 
     @Test
-    fun `just call findAll method`() {
+    fun `just call list method`() {
         val actual =  target.list()
         val expected = listOf(
             Task(
@@ -81,6 +81,108 @@ class TaskRepositoryTest {
                 point = 1,
             ),
         )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `just call find method`() {
+        val actual =  target.find(UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124"))
+        val expected = Task(
+                id = UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124"),
+                title = "タイトル",
+                content = "内容",
+                point = 1,
+        )
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `just call create method`() {
+        val newUUID = UUID.randomUUID()
+        val actual =  target.create(
+            Task(
+                id = newUUID,
+                title = "title",
+                content = "content",
+                point = 100,
+            )
+        )
+        val expected = Task(
+            id = newUUID,
+            title = "title",
+            content = "content",
+            point = 100,
+        )
+        assertEquals(expected, actual)
+
+        val actualRecord = jdbc.query(
+            "SELECT * FROM tasks WHERE id = ?",
+            { rs, _ ->
+                TaskEntity(
+                    id = UUID.fromString(rs.getString("id")),
+                    title = rs.getString("title"),
+                    content = rs.getString("content"),
+                    point = rs.getInt("point"),
+                )
+            },
+            newUUID,
+        )
+
+        assertEquals(listOf(TaskEntity.of(expected)), actualRecord)
+    }
+
+    @Test
+    fun `just call update method`() {
+        val actual =  target.update(
+            Task(
+                id = UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124"),
+                title = "title",
+                content = "content",
+                point = 100,
+            )
+        )
+        val expected = Task(
+            id = UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124"),
+            title = "title",
+            content = "content",
+            point = 100,
+        )
+        assertEquals(expected, actual)
+
+        val actualRecord = jdbc.query(
+            "SELECT * FROM tasks WHERE id = ?",
+            { rs, _ ->
+                TaskEntity(
+                    id = UUID.fromString(rs.getString("id")),
+                    title = rs.getString("title"),
+                    content = rs.getString("content"),
+                    point = rs.getInt("point"),
+                )
+            },
+            UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124")
+        )
+
+        assertEquals(listOf(TaskEntity.of(expected)), actualRecord)
+    }
+
+    @Test
+    fun `just call delete method`() {
+        target.delete(UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124"))
+        val actual = jdbc.query(
+            "SELECT * FROM tasks WHERE id = ?",
+            { rs, _ ->
+                TaskEntity(
+                    id = UUID.fromString(rs.getString("id")),
+                    title = rs.getString("title"),
+                    content = rs.getString("content"),
+                    point = rs.getInt("point"),
+                )
+            },
+            UUID.fromString("470dc36c-45af-4815-b045-3cae8cb95124")
+        )
+
+        val expected = emptyList<TaskEntity>()
+
         assertEquals(expected, actual)
     }
 }
