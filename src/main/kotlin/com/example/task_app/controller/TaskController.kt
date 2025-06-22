@@ -2,6 +2,7 @@ package com.example.task_app.controller
 
 import com.example.task_app.repository.Task
 import com.example.task_app.repository.TaskRepository
+import com.example.task_app.usecase.TaskUseCase
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -15,32 +16,26 @@ import java.util.UUID
 @RestController
 @RequestMapping("/tasks")
 class TaskController(
-    val repository: TaskRepository
+    val repository: TaskRepository,
+    val useCase: TaskUseCase,
 ) {
     @GetMapping
     fun list(): List<Task> {
-        return repository.list()
+        return useCase.list()
     }
 
     @GetMapping("/{id}")
     fun get(
         @PathVariable id: UUID,
     ): Task? {
-        return repository.find(id)
+        return useCase.get(id)
     }
 
     @PostMapping
     fun create(
         @RequestBody request: CreateRequest
     ): Task {
-        val id = UUID.randomUUID()
-        val newTask = Task(
-            id = id,
-            title = request.title,
-            content = request.content,
-            point = request.point,
-        )
-        return repository.create(newTask)
+        return useCase.create(request)
     }
 
     @PutMapping("/{id}")
