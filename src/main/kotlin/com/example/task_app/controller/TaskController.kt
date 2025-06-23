@@ -43,20 +43,14 @@ class TaskController(
         @PathVariable id: UUID,
         @RequestBody request: UpdateRequest,
     ): Task {
-        val task = Task(
-            id = id,
-            title = request.title,
-            content = request.content,
-            point = request.point,
-        )
-        return repository.update(task)
+        return useCase.update(id, request)
     }
 
     @DeleteMapping("/{id}")
     fun delete(
         @PathVariable id: UUID
     ) {
-        repository.delete(id)
+        useCase.delete(id)
     }
 }
 

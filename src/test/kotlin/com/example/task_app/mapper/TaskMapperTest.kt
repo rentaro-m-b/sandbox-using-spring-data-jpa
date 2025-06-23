@@ -27,7 +27,6 @@ class TaskMapperTest {
     private val jdbc by lazy { JdbcTemplate(dataSource) }
 
     companion object {
-
         private val postgres = PostgreSQLContainer("postgres:17-alpine")
 
         @JvmStatic
