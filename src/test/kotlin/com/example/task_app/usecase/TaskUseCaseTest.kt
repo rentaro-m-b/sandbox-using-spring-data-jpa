@@ -21,11 +21,9 @@ class TaskUseCaseTest {
     @Autowired
     private lateinit var target: TaskUseCase
 
-    // なぜデータソースが必要なのかを整理しておく。
     @Autowired
     private lateinit var dataSource: DataSource
 
-    // なぜLazyなのか、そしてこれはなんなのかを整理しておく
     private val jdbc by lazy { JdbcTemplate(dataSource) }
 
     companion object {
